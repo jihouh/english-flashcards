@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ka Yan's Learning English is Fun</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --primary: #FF6B6B; --secondary: #4ECDC4; --yellow: #FFE66D;
+            --blue: #0984e3; --bg: #F7FFF7; --text: #2F2F2F; --shadow: #d4e5d4;
+            --purple: #a55eea;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif; background-color: var(--bg);
+            margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+        }
+
+        .header { width: 100%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; padding: 15px; box-sizing: border-box; }
+        h1 { font-size: 20px; color: var(--primary); margin: 0; font-family: 'Comic Neue'; }
+
+        /* ENLARGED NAV BAR */
+        .nav-bar {
+            position: fixed; bottom: 0; width: 100%; background: white; 
+            display: flex; justify-content: space-around; padding: 12px 0 20px 0;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1); z-index: 1000;
+        }
+
+        .nav-item { font-family: 'Comic Neue'; font-weight: bold; color: #888; cursor: pointer; text-align: center; flex: 1; font-size: 14px; }
+        .nav-item i { display: block; font-size: 28px; font-style: normal; margin-bottom: 4px; }
+        .nav-item.active { color: var(--primary); transform: scale(1.1); transition: 0.2s; }
+
+        .page { display: none; width: 100%; max-width: 500px; padding: 15px 15px 120px 15px; text-align: center; box-sizing: border-box; }
+        .page.active { display: flex; flex-direction: column; align-items: center; }
+
+        /* MODULE BUTTONS */
+        .module-btn {
+            width: 100%; height: 90px; margin-bottom: 15px; font-size: 24px;
+            border-radius: 20px; border: none; color: white; font-weight: 900;
+            font-family: 'Comic Neue'; cursor: pointer; box-shadow: 0 6px 0 rgba(0,0,0,0.1);
+            display: flex; align-items: center; justify-content: center; gap: 15px;
+        }
+        .module-btn i { font-style: normal; font-size: 32px; }
+
+        .word-card {
+            background: white; width: 100%; padding: 30px 10px; border-radius: 30px;
+            border: 4px solid var(--secondary); box-shadow: 0 8px 0 var(--shadow);
+            margin: 15px 0;
+        }
+        .big-word { font-size: 60px; font-family: 'Comic Neue'; color: var(--text); margin: 0; }
+        
+        .spell-display { display: flex; justify-content: center; gap: 10px; margin: 20px 0; min-height: 60px; flex-wrap: wrap; }
+        .char-slot {
+            font-size: 35px; font-family: 'Comic Neue'; font-weight: bold;
+            width: 35px; height: 45px; border-bottom: 4px solid #2F2F2F;
+            display: flex; align-items: center; justify-content: center; color: var(--blue);
+        }
+        .char-slot.filled { border-bottom-color: var(--secondary); }
+
+        .letter-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; }
+        .letter-btn { 
+            background: white; border: 2px solid #ddd; border-radius: 12px;
+            font-size: 24px; font-weight: bold; padding: 15px 0; cursor: pointer;
+            box-shadow: 0 4px 0 #ccc; font-family: 'Comic Neue';
+        }
+        .letter-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #ccc; }
+
+        .lib-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; }
+        .lib-item { 
+            background: white; border-radius: 15px; padding: 20px 5px; border: 2px solid #eee; 
+            display: flex; flex-direction: column; align-items: center; position: relative;
+        }
+
+        button.action-btn { 
+            padding: 15px; border-radius: 15px; border: none; color: white; 
+            font-weight: bold; cursor: pointer; font-family: 'Comic Neue'; 
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1); font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Ka Yan's Learning ✨</h1>
+        <div id="star-count" style="font-weight: bold; color: var(--purple); font-size: 20px;">🌟 0</div>
+    </div>
+
+    <div id="home-page" class="page active">
+        <h2 style="font-family: 'Comic Neue'; color: var(--primary); font-size: 28px; margin-bottom: 30px;">Hi Ka Yan! 👋</h2>
+        <button class="module-btn" style="background:var(--blue);" onclick="showPage('listen', document.getElementById('nav-listen'))"><i>🔊</i> LISTEN</button>
+        <button class="module-btn" style="background:var(--secondary);" onclick="showPage('spell', document.getElementById('nav-spell'))"><i>🐝</i> SPELL</button>
+        <button class="module-btn" style="background:var(--purple);" onclick="showPage('lib', document.getElementById('nav-lib'))"><i>📚</i> LIBRARY</button>
+    </div>
+
+    <div id="listen-page" class="page">
+        <div class="word-card">
+            <p id="listen-word" class="big-word">Word</p>
+            <p id="listen-phonetic" style="color:var(--primary); font-weight:bold; margin-top:5px;"></p>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%;">
+            <button class="action-btn" style="background:var(--blue)" onclick="speak(currentWord)">🔊 REPLAY</button>
+            <button class="action-btn" style="background:var(--purple)" onclick="spellWord(currentWord)">🔤 SPELL IT</button>
+        </div>
+        <div style="display: flex; gap: 15px; width: 100%; margin-top: 20px;">
+            <button class="action-btn" style="background:var(--yellow); color:#333; flex:1" onclick="prevWord()">⬅️ PREV</button>
+            <button class="action-btn" style="background:var(--secondary); flex:2" onclick="nextWord()">NEXT WORD ➡️</button>
+        </div>
+    </div>
+
+    <div id="spell-page" class="page">
+        <div class="word-card" style="padding: 15px;">
+            <div id="spell-word-container" class="spell-display"></div>
+        </div>
+        <div style="display: flex; gap: 10px; width: 100%; margin-bottom: 20px;">
+            <button class="action-btn" style="background:var(--purple); flex:1" onclick="speak(currentWord)">🔊 HEAR WORD</button>
+            <button class="action-btn" style="background:#ccc; color:#333; flex:1" onclick="startSpellingBee()">🔄 SKIP</button>
+        </div>
+        <div id="letter-pool" class="letter-grid"></div>
+    </div>
+
+    <div id="lib-page" class="page">
+        <div class="lib-grid" id="libGrid"></div>
+    </div>
+
+    <div class="nav-bar">
+        <div class="nav-item active" onclick="showPage('home', this)"><i>🏠</i>Home</div>
+        <div id="nav-listen" class="nav-item" onclick="showPage('listen', this)"><i>🔊</i>Listen</div>
+        <div id="nav-spell" class="nav-item" onclick="showPage('spell', this)"><i>🐝</i>Spell</div>
+        <div id="nav-lib" class="nav-item" onclick="showPage('lib', this)"><i>📚</i>Library</div>
+    </div>
+
+<script>
+    const wordList = ["a", "I", "to", "in", "am", "go", "is", "at", "on", "me", "no", "it", "of", "he", "my", "so", "an", "or", "we", "by", "do", "as", "be", "up", "if", "us", "the", "you", "she", "and", "are", "boy", "ear", "eye", "yes", "her", "not", "big", "for", "has", "him", "can", "run", "eat", "man", "his", "all", "our", "see", "have", "had", "say", "sun", "leg", "this"];
+    const phoneticMap = {'a': '/eɪ/', 'I': '/aɪ/', 'to': '/tuː/', 'in': '/ɪn/', 'am': '/æm/', 'go': '/ɡoʊ/', 'is': '/ɪz/', 'at': '/æt/', 'on': '/ɒn/', 'me': '/miː/', 'no': '/noʊ/', 'it': '/ɪt/', 'of': '/əv/', 'he': '/hiː/', 'my': '/maɪ/', 'so': '/soʊ/', 'an': '/æn/', 'or': '/ɔːr/', 'we': '/wiː/', 'by': '/baɪ/', 'do': '/duː/', 'as': '/æz/', 'be': '/biː/', 'up': '/ʌp/', 'if': '/ɪf/', 'us': '/ʌs/', 'the': '/ðə/', 'you': '/juː/', 'she': '/ʃiː/', 'and': '/ænd/', 'are': '/ɑːr/', 'boy': '/bɔɪ/', 'ear': '/ɪər/', 'eye': '/aɪ/', 'yes': '/jes/', 'her': '/hɜːr/', 'not': '/nɒt/', 'big': '/bɪɡ/', 'for': '/fɔːr/', 'has': '/hæz/', 'him': '/hɪm/', 'can': '/kæn/', 'run': '/rʌn/', 'eat': '/iːt/', 'man': '/mæn/', 'his': '/hɪz/', 'all': '/ɔːl/', 'our': '/aʊər/', 'see': '/siː/', 'have': '/hæv/', 'had': '/hæd/', 'say': '/seɪ/', 'sun': '/sʌn/', 'leg': '/leɡ/', 'this': '/ðɪs/'};
+
+    let stars = JSON.parse(localStorage.getItem('englishStars')) || {};
+    let currentIndex = 0;
+    let currentWord = "";
+    let userInput = "";
+
+    function showPage(pageId, navEl) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById(pageId + '-page').classList.add('active');
+        navEl.classList.add('active');
+        if(pageId === 'listen') updateListenWord();
+        if(pageId === 'spell') startSpellingBee();
+        if(pageId === 'lib') renderLib();
+        updateStarDisplay();
+    }
+
+    function updateStarDisplay() {
+        const total = Object.values(stars).reduce((a, b) => a + b, 0);
+        document.getElementById('star-count').innerText = `🌟 ${total}`;
+    }
+
+    function speak(t, rate = 0.6) {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(t);
+        u.lang = 'en-US'; u.rate = rate;
+        window.speechSynthesis.speak(u);
+    }
+
+    function spellWord(word) {
+        window.speechSynthesis.cancel();
+        word.split('').forEach((char) => {
+            const u = new SpeechSynthesisUtterance(char);
+            u.lang = 'en-US'; u.rate = 0.9;
+            window.speechSynthesis.speak(u);
+        });
+    }
+
+    function updateListenWord() {
+        currentWord = wordList[currentIndex];
+        document.getElementById('listen-word').innerText = currentWord;
+        document.getElementById('listen-phonetic').innerText = phoneticMap[currentWord] || '';
+        speak(currentWord);
+    }
+    function nextWord() { currentIndex = (currentIndex + 1) % wordList.length; updateListenWord(); }
+    function prevWord() { currentIndex = (currentIndex - 1 + wordList.length) % wordList.length; updateListenWord(); }
+
+    function startSpellingBee() {
+        userInput = "";
+        currentWord = wordList[Math.floor(Math.random() * wordList.length)];
+        const container = document.getElementById('spell-word-container');
+        container.innerHTML = '';
+        for (let i = 0; i < currentWord.length; i++) {
+            const slot = document.createElement('div');
+            slot.className = 'char-slot';
+            slot.id = 's-slot-' + i;
+            container.appendChild(slot);
+        }
+        
+        const pool = document.getElementById('letter-pool');
+        pool.innerHTML = '';
+        let letters = currentWord.split('');
+        const alphabet = "abcdefghijklmnopqrstuvwxyz";
+        while(letters.length < 12) { letters.push(alphabet[Math.floor(Math.random() * alphabet.length)]); }
+        letters.sort(() => 0.5 - Math.random());
+
+        letters.forEach(char => {
+            const btn = document.createElement('button');
+            btn.className = 'letter-btn';
+            btn.innerText = char;
+            btn.onclick = () => {
+                if (char.toLowerCase() === currentWord[userInput.length].toLowerCase()) {
+                    document.getElementById('s-slot-' + userInput.length).innerText = currentWord[userInput.length];
+                    document.getElementById('s-slot-' + userInput.length).classList.add('filled');
+                    userInput += char;
+                    btn.style.visibility = 'hidden';
+                    if (userInput.length === currentWord.length) {
+                        confetti({ particleCount: 50 });
+                        stars[currentWord] = (stars[currentWord] || 0) + 1;
+                        localStorage.setItem('englishStars', JSON.stringify(stars));
+                        updateStarDisplay();
+                        setTimeout(startSpellingBee, 1000);
+                    }
+                } else {
+                    btn.style.backgroundColor = '#ffcccc';
+                    setTimeout(() => btn.style.backgroundColor = 'white', 300);
+                }
+            };
+            pool.appendChild(btn);
+        });
+        speak(currentWord);
+    }
+
+    function renderLib() {
+        const grid = document.getElementById('libGrid');
+        grid.innerHTML = '';
+        wordList.forEach(w => {
+            const item = document.createElement('div');
+            item.className = 'lib-item';
+            const count = stars[w] || 0;
+            item.innerHTML = `<span style="font-size:12px; color:orange">⭐ ${count}</span><b style="font-size: 20px;">${w}</b>`;
+            item.onclick = () => speak(w);
+            grid.appendChild(item);
+        });
+    }
+
+    updateStarDisplay();
+</script>
+</body>
+</html>
